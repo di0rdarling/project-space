@@ -69,6 +69,6 @@ app.use((request, result) => {
     result.status(404).send({ url: request.originalUrl + ' not found' })
 })
 
-app.listen(3000, () => {
+app.listen(8080, () => {
     connectToMongoCluster();
 });
