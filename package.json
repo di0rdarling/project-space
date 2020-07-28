@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "NODE_ENV=dev nodemon -r dotenv/config api/server.js",
+    "test": "NODE_ENV=test mocha test/**/*.js"
   },
   "author": "",
   "license": "ISC",
@@ -27,6 +27,11 @@
     "validator": "^13.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "dotenv": "^8.2.0",
+    "mocha": "^8.0.1",
+    "nodemon": "^2.0.4",
+    "supertest": "^4.0.2"
   }
 }
