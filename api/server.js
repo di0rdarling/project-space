@@ -1,11 +1,9 @@
-const { port } = require('./config/config')
+require('dotenv').config();
 const { getAllProjects, createProject, editProject, getProject, deleteProject } = require('./database/mongodb')
 const Express = require("express");
 const cors = require('cors')
 const BodyParser = require("body-parser");
 const ObjectId = require("mongodb").ObjectID;
-
-const PORT = port || 8080
 
 var app = Express();
 app.use(BodyParser.json());
@@ -51,6 +49,7 @@ app.use((request, result) => {
     result.status(400).send({ url: request.originalUrl + ' not found' })
 })
 
+const PORT = process.env.PORT || 8080
 app.listen(PORT, () => { });
 
 module.exports = app;

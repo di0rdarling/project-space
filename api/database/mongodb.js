@@ -1,7 +1,7 @@
-const { user, password, port, cluster, databaseName, collectionName } = require('../config/config')
+const { user, password } = require('../config/config')
 
 // Atlas connection string;
-const url = `mongodb+srv://${user}:${password}@${cluster}.j2me1.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true`;
+const url = `mongodb+srv://${user}:${password}@databases.j2me1.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true`;
 const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectID;
 const client = new MongoClient(url);
@@ -11,8 +11,8 @@ async function connectToDatabase() {
 
     try {
         await client.connect();
-        database = client.db(databaseName);
-        collection = database.collection(collectionName);
+        database = client.db("projects_data");
+        collection = database.collection("projects");
     } catch (err) {
         console.log(err.stack)
     }
@@ -43,7 +43,6 @@ async function editProject(project, response) {
 
 async function getProject(_id, response) {
     await connectToDatabase();
-    console.log("id -db", _id)
     let query = {
         _id: ObjectId(_id)
     }
@@ -56,13 +55,18 @@ async function getProject(_id, response) {
 }
 
 async function getAllProjects(response) {
+    console.log("url", url)
     await connectToDatabase();
-    collection.find({}).toArray((error, result) => {
-        if (error) {
-            return response.status(404).send(error);
-        }
-        response.send(result);
-    });
+    if (collection) {
+        collection.find({}).toArray((error, result) => {
+            if (error) {
+                return response.status(404).send(error);
+            }
+            response.send(result);
+        });
+    } else {
+        response.status(503).send('Unable to connect to database.')
+    }
 }
 
 async function deleteProject(_id, response) {

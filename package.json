@@ -2,7 +2,7 @@
   "name": "api-test",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=dev nodemon -r dotenv/config api/server.js",
     "test": "NODE_ENV=test mocha test/**/*.js"
