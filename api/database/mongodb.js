@@ -55,7 +55,6 @@ async function getProject(_id, response) {
 }
 
 async function getAllProjects(response) {
-    console.log("url", url)
     await connectToDatabase();
     if (collection) {
         collection.find({}).toArray((error, result) => {
