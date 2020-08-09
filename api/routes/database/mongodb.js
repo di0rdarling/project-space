@@ -1,18 +1,18 @@
-const { user, password } = require('../config/config')
+const { mongoAtlasConnectionString, database, collection } = require('../config/config')
 
-// Atlas connection string;
-const url = `mongodb+srv://${user}:${password}@databases.j2me1.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true`;
 const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectID;
-const client = new MongoClient(url);
+const client = new MongoClient(mongoAtlasConnectionString);
 
-var database, collection;
-async function connectToDatabase() {
+var col;
+async function connectToDatabase(returnCollection) {
 
     try {
         await client.connect();
-        database = client.db("projects_data");
-        collection = database.collection("projects");
+        col = client.db(database || 'projects_data').collection(collection || 'projects');
+        if(returnCollection){
+            return col;
+        }
     } catch (err) {
         console.log(err.stack)
     }
@@ -20,7 +20,7 @@ async function connectToDatabase() {
 
 async function createProject(project, response) {
     await connectToDatabase();
-    collection.insert(project, (error, result) => {
+    col.insert(project, (error, result) => {
         if (error) {
             return response.status(404).send(error);
         }
@@ -33,11 +33,11 @@ async function editProject(project, response) {
     let query = {
         _id: ObjectId(project._id)
     }
-    collection.updateOne(query, { $set: project }, (error, result) => {
+    col.updateOne(query, { $set: project }, (error, result) => {
         if (error) {
             return response.status(404).send(err);
         }
-        response.send(result.result)
+        response.send(result)
     })
 }
 
@@ -46,7 +46,7 @@ async function getProject(_id, response) {
     let query = {
         _id: ObjectId(_id)
     }
-    collection.findOne(query, (error, result) => {
+    col.findOne(query, (error, result) => {
         if (error) {
             return response.status(404).send(error);
         }
@@ -56,8 +56,8 @@ async function getProject(_id, response) {
 
 async function getAllProjects(response) {
     await connectToDatabase();
-    if (collection) {
-        collection.find({}).toArray((error, result) => {
+    if (col) {
+        col.find({}).toArray((error, result) => {
             if (error) {
                 return response.status(404).send(error);
             }
@@ -73,7 +73,7 @@ async function deleteProject(_id, response) {
     let query = {
         _id: ObjectId(_id)
     }
-    collection.deleteOne(query, (error, result) => {
+    col.deleteOne(query, (error, result) => {
         if (error) {
             return response.status(404).send(err);
         }
@@ -82,6 +82,7 @@ async function deleteProject(_id, response) {
 }
 
 module.exports = {
+    connectToDatabase,
     createProject,
     editProject,
     getProject,

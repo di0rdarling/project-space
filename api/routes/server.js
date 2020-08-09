@@ -31,11 +31,15 @@ app.get("/project/:id", (request, response) => {
 });
 
 app.put("/project/:id", (request, response) => {
+    let modifiedDateTime = new Date();
+    modifiedDateTime.setSeconds(0);
+    modifiedDateTime.setMilliseconds(0);
+
     let project = {
         _id: ObjectId(request.body._id),
         name: request.body.name,
         description: request.body.description || null,
-        modifiedDateTime: new Date().toISOString(),
+        modifiedDateTime: modifiedDateTime.toISOString(),
         createdDateTime: request.body.createdDateTime,
     }
     editProject(project, response)
