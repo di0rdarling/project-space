@@ -1,24 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import * as serviceWorker from './serviceWorker';
-import MyProjectsPageContainer from './components/projects/myProjectsPageContainer';
-import ProjectPageContainer from './components/projects/projectPageContainer';
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import * as serviceWorker from "./serviceWorker";
+import MyProjectsPage from "./pages/myProjectsPage";
+import ProjectPage from "./pages/projectPage";
 
 const routing = (
   <React.StrictMode>
     <Router>
-      <Route path='/my-projects' component={MyProjectsPageContainer} />
-      <Route path='/project/:id' component={ProjectPageContainer} />
+      <Route path="/my-projects" component={MyProjectsPage} />
+      <Route path="/project/:id" component={ProjectPage} />
     </Router>
   </React.StrictMode>
-)
-
-
-ReactDOM.render(
-  routing,
-  document.getElementById('root')
 );
+
+ReactDOM.render(routing, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
