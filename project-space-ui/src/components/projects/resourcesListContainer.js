@@ -11,16 +11,12 @@ import {
   Table,
   Button,
   IconButton,
-  Checkbox,
-  TextField,
 } from "@material-ui/core";
-import AlarmIcon from "@material-ui/icons/AccessAlarmOutlined";
 import EditIcon from "@material-ui/icons/CreateOutlined";
 import DeleteIcon from "@material-ui/icons/CloseOutlined";
 import LinkIcon from "@material-ui/icons/Link";
 import { useProjectState } from "../../context/projectsContext";
 import { palette } from "../../data/palette";
-import { convertToReadableDate } from "../../utils/dateUtils";
 import { updateProject } from "../../integration/projects";
 
 const useStyles = makeStyles((theme) => ({
@@ -30,11 +26,6 @@ const useStyles = makeStyles((theme) => ({
     height: 300,
     overflow: "scroll",
     margin: "16px 0px",
-  },
-  rootBottom: {
-    position: "absolute",
-    bottom: "90px",
-    width: "97%",
   },
   objectsListContainerHeader: {
     borderBottom: "solid thin",
@@ -55,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     height: "100%",
   },
-  createTaskButton: {
+  createResourceButton: {
     backgroundColor: palette.secondaryButton,
     height: 50,
   },
@@ -75,12 +66,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     border: "solid thin",
   },
-  createTaskArea: {
+  createResourceArea: {
     padding: theme.spacing(2),
     height: "100%",
     position: "relative",
   },
-  taskTitle: {
+  resourceName: {
     marginBottom: theme.spacing(1),
   },
   createButtonBottom: {
@@ -98,24 +89,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TasksListContainer() {
+export default function ResourcesListContainer() {
   let classes = useStyles();
   let project = useProjectState();
-  let [error, setError] = useState({
+  let [, setError] = useState({
     statusCode: null,
     errorMessage: null,
   });
-  const [creatingTask, setCreatingTask] = useState(false);
-  const [newTask, setNewTask] = useState({
-    task: "",
-    dueDate: new Date().toISOString(),
+  const [creatingResource, setCreatingResource] = useState(false);
+  const [newResource, setNewResource] = useState({
+    name: "",
+    link: "",
   });
 
-  const createTask = async () => {
-    if (!project.tasks) {
-      project.tasks = [newTask];
+  const createResource = async () => {
+    if (!project.resources) {
+      project.resources = [newResource];
     } else {
-      project.tasks.push(newTask);
+      project.resources.push(newResource);
     }
     try {
       await updateProject(project);
@@ -132,44 +123,40 @@ export default function TasksListContainer() {
     <Box className={classes.root}>
       <Box className={classes.objectsListContainerHeader}>
         <Typography>
-          Tasks ({project.tasks ? project.tasks.length : 0})
+          Resources ({project.resources ? project.resources.length : 0})
         </Typography>
-        {project.tasks && (
+        {project.resources && (
           <Button className={classes.createButton}>CREATE</Button>
         )}
       </Box>
-      {project.tasks ? (
+      {project.resources ? (
         <TableContainer>
           <Table size="small" className={classes.objectTable}>
             <TableHead>
               <TableRow>
-                <TableCell style={{ width: "25px" }}></TableCell>
-                <TableCell>Task</TableCell>
-                <TableCell>Due Date</TableCell>
+                <TableCell style={{ width: "70px" }}></TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Link</TableCell>
                 <TableCell>Tags</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
-            {project.tasks && (
+            {project.resources && (
               <TableBody>
-                {project.tasks.map((task) => (
+                {project.resources.map((resources) => (
                   <TableRow>
                     <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>{task.task}</TableCell>
-                    {/* //TODO: ADD TIME */}
-                    <TableCell>{convertToReadableDate(task.dueDate)}</TableCell>
-                    <TableCell>Tags placeholder</TableCell>
-                    <TableCell align="right">
-                      <EditIcon className={classes.icon} />
-                      <IconButton size="small"></IconButton>
                       <IconButton size="small">
-                        <AlarmIcon className={classes.icon} />
+                        <EditIcon className={classes.icon} />
                       </IconButton>
                       <IconButton size="small">
                         <LinkIcon className={classes.icon} />
                       </IconButton>
+                    </TableCell>
+                    <TableCell>{resources.name}</TableCell>
+                    <TableCell>{resources.link}</TableCell>
+                    <TableCell>Tags placeholder</TableCell>
+                    <TableCell align="right">
                       <IconButton size="small">
                         <DeleteIcon className={classes.icon} />
                       </IconButton>
@@ -182,50 +169,40 @@ export default function TasksListContainer() {
         </TableContainer>
       ) : (
         <>
-          {creatingTask ? (
-            <Box className={classes.createTaskArea}>
-              <Typography className={classes.taskTitle}>Task</Typography>
+          {creatingResource ? (
+            <Box className={classes.createResourceArea}>
+              <Typography className={classes.resourceName}>Name</Typography>
               <input
                 className={classes.input}
                 onChange={(event) =>
-                  setNewTask({ ...newTask, task: event.target.value })
+                  setNewResource({ ...newResource, name: event.target.value })
+                }
+              />
+              <Typography className={classes.resourceName}>Link</Typography>
+              <input
+                className={classes.input}
+                onChange={(event) =>
+                  setNewResource({ ...newResource, link: event.target.value })
                 }
               />
               <Box>
-                <form className={classes.container} noValidate>
-                  <TextField
-                    id="datetime-local"
-                    label="Set due date"
-                    type="datetime-local"
-                    defaultValue={newTask.dueDate}
-                    className={classes.dueDateTextfield}
-                    onChange={(date) =>
-                      setNewTask({ ...newTask, dueDate: date })
-                    }
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </form>
-                <Box className={classes.rootBottom}>
-                  <Button className={classes.cancelButton}>CANCEL</Button>
-                  <Button
-                    className={classes.createButtonBottom}
-                    disabled={!newTask.task}
-                    onClick={() => createTask()}
-                  >
-                    CREATE
-                  </Button>
-                </Box>
+                <Button className={classes.cancelButton}>CANCEL</Button>
+                <Button
+                  className={classes.createButtonBottom}
+                  disabled={!newResource.link}
+                  onClick={() => createResource()}
+                >
+                  CREATE
+                </Button>
               </Box>
             </Box>
           ) : (
             <Box className={classes.createButtonContainer}>
               <Button
-                className={classes.createTaskButton}
-                onClick={() => setCreatingTask(true)}
+                className={classes.createResourceButton}
+                onClick={() => setCreatingResource(true)}
               >
-                CREATE TASK
+                CREATE RESOURCE
               </Button>
             </Box>
           )}

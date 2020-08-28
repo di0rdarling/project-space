@@ -1,25 +1,12 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  makeStyles,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Table,
-  Button,
-  IconButton,
-} from "@material-ui/core";
+import { Box, Typography, makeStyles } from "@material-ui/core";
 import { useProjectState } from "../../context/projectsContext";
 import { convertToReadableDate } from "../../utils/dateUtils";
 import { palette } from "../../data/palette";
-import EditIcon from "@material-ui/icons/CreateOutlined";
-import DeleteIcon from "@material-ui/icons/CloseOutlined";
-import LinkIcon from "@material-ui/icons/Link";
 import OverviewContainer from "./overviewContainer";
 import TasksListContainer from "./tasksListContainer";
+import NotesListContainer from "./notesListContainer";
+import ResourcesListContainer from "./resourcesListContainer";
 
 const useStyles = makeStyles({
   root: {
@@ -112,95 +99,8 @@ export default function ProjectContainer() {
           </Box>
           <Box className={classes.right}>
             <TasksListContainer />
-            <Box className={classes.objectsListContainer}>
-              <Box className={classes.objectsListContainerHeader}>
-                <Typography>
-                  Notes ({project.notes ? project.notes.length : 0})
-                </Typography>
-                <Button className={classes.createButton}>CREATE</Button>
-              </Box>
-              <TableContainer>
-                <Table size="small" className={classes.objectTable}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ width: "70px" }}></TableCell>
-                      <TableCell>Heading</TableCell>
-                      <TableCell>Body</TableCell>
-                      <TableCell>Tags</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  {project.notes && (
-                    <TableBody>
-                      {project.notes.map((note) => (
-                        <TableRow>
-                          <TableCell></TableCell>
-                          <TableCell>{note.heading}</TableCell>
-                          <TableCell>{note.body}</TableCell>
-                          <TableCell>Tags placeholder</TableCell>
-                          <TableCell align="right">
-                            <IconButton size="small">
-                              <EditIcon className={classes.icon} />
-                            </IconButton>
-                            <IconButton size="small">
-                              <LinkIcon className={classes.icon} />
-                            </IconButton>
-                            <IconButton size="small">
-                              <DeleteIcon className={classes.icon} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  )}
-                </Table>
-              </TableContainer>
-            </Box>
-            <Box className={classes.objectsListContainer}>
-              <Box className={classes.objectsListContainerHeader}>
-                <Typography>
-                  Resources ({project.resources ? project.resources.length : 0})
-                </Typography>
-                <Button className={classes.createButton}>CREATE</Button>
-              </Box>
-              <TableContainer>
-                <Table size="small" className={classes.objectTable}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ width: "70px" }}></TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Link</TableCell>
-                      <TableCell>Tags</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  {project.resources && (
-                    <TableBody>
-                      {project.resources.map((resources) => (
-                        <TableRow>
-                          <TableCell>
-                            <IconButton size="small">
-                              <EditIcon className={classes.icon} />
-                            </IconButton>
-                            <IconButton size="small">
-                              <LinkIcon className={classes.icon} />
-                            </IconButton>
-                          </TableCell>
-                          <TableCell>{resources.name}</TableCell>
-                          <TableCell>{resources.link}</TableCell>
-                          <TableCell>Tags placeholder</TableCell>
-                          <TableCell align="right">
-                            <IconButton size="small">
-                              <DeleteIcon className={classes.icon} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  )}
-                </Table>
-              </TableContainer>
-            </Box>
+            <NotesListContainer />
+            <ResourcesListContainer />
           </Box>
         </Box>
       )}

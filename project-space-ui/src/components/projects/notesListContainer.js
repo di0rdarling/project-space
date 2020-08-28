@@ -11,16 +11,12 @@ import {
   Table,
   Button,
   IconButton,
-  Checkbox,
-  TextField,
 } from "@material-ui/core";
-import AlarmIcon from "@material-ui/icons/AccessAlarmOutlined";
 import EditIcon from "@material-ui/icons/CreateOutlined";
 import DeleteIcon from "@material-ui/icons/CloseOutlined";
 import LinkIcon from "@material-ui/icons/Link";
 import { useProjectState } from "../../context/projectsContext";
 import { palette } from "../../data/palette";
-import { convertToReadableDate } from "../../utils/dateUtils";
 import { updateProject } from "../../integration/projects";
 
 const useStyles = makeStyles((theme) => ({
@@ -30,11 +26,6 @@ const useStyles = makeStyles((theme) => ({
     height: 300,
     overflow: "scroll",
     margin: "16px 0px",
-  },
-  rootBottom: {
-    position: "absolute",
-    bottom: "90px",
-    width: "97%",
   },
   objectsListContainerHeader: {
     borderBottom: "solid thin",
@@ -55,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     height: "100%",
   },
-  createTaskButton: {
+  createNoteButton: {
     backgroundColor: palette.secondaryButton,
     height: 50,
   },
@@ -75,12 +66,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     border: "solid thin",
   },
-  createTaskArea: {
+  createNoteArea: {
     padding: theme.spacing(2),
     height: "100%",
     position: "relative",
   },
-  taskTitle: {
+  noteTitle: {
     marginBottom: theme.spacing(1),
   },
   createButtonBottom: {
@@ -98,24 +89,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TasksListContainer() {
+export default function NotesListContainer() {
   let classes = useStyles();
   let project = useProjectState();
-  let [error, setError] = useState({
+  let [, setError] = useState({
     statusCode: null,
     errorMessage: null,
   });
-  const [creatingTask, setCreatingTask] = useState(false);
-  const [newTask, setNewTask] = useState({
-    task: "",
-    dueDate: new Date().toISOString(),
+  const [creatingNote, setCreatingNote] = useState(false);
+  const [newNote, setNewNote] = useState({
+    title: "",
+    body: "",
+    createdDateTime: null,
   });
 
-  const createTask = async () => {
-    if (!project.tasks) {
-      project.tasks = [newTask];
+  const createNote = async () => {
+    newNote.createdDateTime = new Date().toISOString();
+    if (!project.notes) {
+      project.notes = [newNote];
     } else {
-      project.tasks.push(newTask);
+      project.notes.push(newNote);
     }
     try {
       await updateProject(project);
@@ -132,41 +125,36 @@ export default function TasksListContainer() {
     <Box className={classes.root}>
       <Box className={classes.objectsListContainerHeader}>
         <Typography>
-          Tasks ({project.tasks ? project.tasks.length : 0})
+          Notes ({project.notes ? project.notes.length : 0})
         </Typography>
-        {project.tasks && (
+        {project.notes && (
           <Button className={classes.createButton}>CREATE</Button>
         )}
       </Box>
-      {project.tasks ? (
+      {project.notes ? (
         <TableContainer>
           <Table size="small" className={classes.objectTable}>
             <TableHead>
               <TableRow>
-                <TableCell style={{ width: "25px" }}></TableCell>
-                <TableCell>Task</TableCell>
-                <TableCell>Due Date</TableCell>
+                <TableCell style={{ width: "70px" }}></TableCell>
+                <TableCell>Heading</TableCell>
+                <TableCell>Body</TableCell>
                 <TableCell>Tags</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
-            {project.tasks && (
+            {project.notes && (
               <TableBody>
-                {project.tasks.map((task) => (
+                {project.notes.map((note) => (
                   <TableRow>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>{task.task}</TableCell>
-                    {/* //TODO: ADD TIME */}
-                    <TableCell>{convertToReadableDate(task.dueDate)}</TableCell>
+                    <TableCell></TableCell>
+                    <TableCell>{note.heading}</TableCell>
+                    <TableCell>{note.body}</TableCell>
                     <TableCell>Tags placeholder</TableCell>
                     <TableCell align="right">
-                      <EditIcon className={classes.icon} />
-                      <IconButton size="small"></IconButton>
-                      <IconButton size="small">
-                        <AlarmIcon className={classes.icon} />
-                      </IconButton>
+                      <Button size="small">
+                        <EditIcon className={classes.icon} />
+                      </Button>
                       <IconButton size="small">
                         <LinkIcon className={classes.icon} />
                       </IconButton>
@@ -182,50 +170,41 @@ export default function TasksListContainer() {
         </TableContainer>
       ) : (
         <>
-          {creatingTask ? (
-            <Box className={classes.createTaskArea}>
-              <Typography className={classes.taskTitle}>Task</Typography>
+          {creatingNote ? (
+            <Box className={classes.createNoteArea}>
+              <Typography className={classes.noteTitle}>Title</Typography>
               <input
                 className={classes.input}
                 onChange={(event) =>
-                  setNewTask({ ...newTask, task: event.target.value })
+                  setNewNote({ ...newNote, title: event.target.value })
+                }
+              />
+              <Typography className={classes.noteTitle}>Body</Typography>
+              <textarea
+                className={classes.input}
+                rows="5"
+                onChange={(event) =>
+                  setNewNote({ ...newNote, body: event.target.value })
                 }
               />
               <Box>
-                <form className={classes.container} noValidate>
-                  <TextField
-                    id="datetime-local"
-                    label="Set due date"
-                    type="datetime-local"
-                    defaultValue={newTask.dueDate}
-                    className={classes.dueDateTextfield}
-                    onChange={(date) =>
-                      setNewTask({ ...newTask, dueDate: date })
-                    }
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </form>
-                <Box className={classes.rootBottom}>
-                  <Button className={classes.cancelButton}>CANCEL</Button>
-                  <Button
-                    className={classes.createButtonBottom}
-                    disabled={!newTask.task}
-                    onClick={() => createTask()}
-                  >
-                    CREATE
-                  </Button>
-                </Box>
+                <Button className={classes.cancelButton}>CANCEL</Button>
+                <Button
+                  className={classes.createButtonBottom}
+                  disabled={!newNote.body}
+                  onClick={() => createNote()}
+                >
+                  CREATE
+                </Button>
               </Box>
             </Box>
           ) : (
             <Box className={classes.createButtonContainer}>
               <Button
-                className={classes.createTaskButton}
-                onClick={() => setCreatingTask(true)}
+                className={classes.createNoteButton}
+                onClick={() => setCreatingNote(true)}
               >
-                CREATE TASK
+                CREATE NOTE
               </Button>
             </Box>
           )}
