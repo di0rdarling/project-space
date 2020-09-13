@@ -8,7 +8,8 @@
     "npm": "6.14.6"
   },
   "scripts": {
-    "start": "nodemon -r dotenv/config server/index.js",
+    "start": "node -r dotenv/config server/index.js",
+    "start:dev": "nodemon -r dotenv/config server/index.js",
     "test": "better-npm-run start:test"
   },
   "betterScripts": {
