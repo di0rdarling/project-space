@@ -3,10 +3,10 @@ const ProjectCreate = require("../models/projectCreate");
 const Project = require("../models/project");
 const app = express();
 
-app.post("", async (request, response) => {
+app.post("/", async (request, response) => {
   await new ProjectCreate(request.body)
     .save()
-    .then(() => {
+    .then((project) => {
       response.sendStatus(201);
     })
     .catch((err) => {

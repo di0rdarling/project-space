@@ -1,7 +1,7 @@
+const express = require("express");
 require("dotenv").config();
 const { mongoAtlasConnectionString } = require("./config/config");
 const cors = require("cors");
-const express = require("express");
 const BodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const projectRouter = require("./routes/projectRoutes");
